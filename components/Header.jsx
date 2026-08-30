@@ -60,7 +60,7 @@ const Header = async () => {
         {/* Right cluster */}
         <div className="flex min-w-0 items-center justify-self-end gap-1.5 sm:gap-3">
           <Show when="signed-in">
-            <UserDropdown />
+            <UserDropdown user={user} />
           </Show>
 
           <Show when="signed-out">

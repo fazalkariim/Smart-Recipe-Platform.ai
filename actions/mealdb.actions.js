@@ -56,9 +56,15 @@ export async function getAreas(){
         }
 
         const data = await response.json();
+
+        // Remove duplicate strArea entries (TheMealDB API sometimes returns duplicates)
+        const uniqueAreas = Array.from(
+            new Map((data.meals || []).map((area) => [area.strArea, area])).values()
+        );
+
         return{
            success: true,
-           areas: data.meals || [],
+           areas: uniqueAreas,
         }
     } catch (error) {
         console.error("Error fetching areas:", error)

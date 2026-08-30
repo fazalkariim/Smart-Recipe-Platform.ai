@@ -22,45 +22,40 @@ const PantryPage = () => {
     const {loading:loadingItems, data: itemsData, fn: fetchItems} = useFetch(getPantryItems)
 
     // delete item
-    const {loading:deleting, data: deleteData, fn: deleteItem} = useFetch(deletePantryItem)
+    const {loading:deleting, fn: deleteItem} = useFetch(deletePantryItem)
 
     // update item
-    const {loading:updating, data: updateData, fn: updateItem} = useFetch(updatePantryItem)
+    const {loading:updating, fn: updateItem} = useFetch(updatePantryItem)
 
-    // load items on mount
-    useEffect(()=>{
-      fetchItems()
+    // helper: fetch items and sync into state (no longer done inside a useEffect)
+    const refreshItems = async () => {
+      const result = await fetchItems();
+      if (result?.success) {
+        setItems(result.item);
+      }
+      return result;
+    };
+
+// load items on mount
+useEffect(()=>{
+  const loadInitialItems = async () => {
+    const result = await fetchItems();
+    if (result?.success) {
+      setItems(result.item);
+    }
+  };
+  loadInitialItems();
 }, [])
-
-    // update item when data arrives
-    useEffect(()=>{
-      if(itemsData?.success){
-      setItems(itemsData.item)
-     }
-    }, [itemsData])
-
-    // refresh after delete
-    useEffect(()=>{
-      if(deleteData?.success && !deleting){
-        toast.success("Item removed from pantry");
-        fetchItems()
-      }
-    },[deleteData])
-
-    //refresh after update
-    useEffect(()=>{
-      if(updateData?.success){
-        toast.success("Item updated Successfully");
-        setEditingId(null);
-        fetchItems()
-      }
-    },[updateData])
 
     // handle delete
     const handleDelete = async(itemId)=>{
       const formData = new FormData();
       formData.append("itemId",itemId);
-      await deleteItem(formData);
+      const result = await deleteItem(formData);
+      if (result?.success) {
+        toast.success("Item removed from pantry");
+        await refreshItems();
+      }
     }
 
     // start editing
@@ -78,7 +73,12 @@ const PantryPage = () => {
       formData.append("itemId", editingId);
       formData.append("name", editValues.name);
       formData.append("quantity", editValues.quantity);
-      await updateItem(formData)
+      const result = await updateItem(formData);
+      if (result?.success) {
+        toast.success("Item updated Successfully");
+        setEditingId(null);
+        await refreshItems();
+      }
     };
 
     // cancel edit
@@ -88,8 +88,8 @@ const PantryPage = () => {
     };
 
 
-    const handleModalSuccess = ()=>{
-      fetchItems()
+    const handleModalSuccess = async ()=>{
+      await refreshItems();
     }
 
 

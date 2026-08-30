@@ -194,12 +194,12 @@ const RecipeCard = ({recipe, variant = "default"}) => {
                )}
               </CardContent>
               <CardFooter>
-                <L ink href={data.href} className="w-full">
+                <Link href={data.href} className="w-full">
                   <Button className="w-full bg-green-600 hover:bg-green-700 text-white gap-2">
                     <ChefHat className="w-4 h-4" />
                     View Full Recipe
                   </Button>
-                </L>
+                </Link>
               </CardFooter> 
         </Card>
         )

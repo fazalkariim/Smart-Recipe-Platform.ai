@@ -49,63 +49,57 @@ function RecipeContent() {
   } = useFetch(removeRecipeFromCollection);
 
 
-    // Handle save success
-  useEffect(() => {
-    if (saveData?.success) {
-      if (saveData.alreadySaved) {
+
+   // Toggle save/unsave
+  const handleToggleSave = async () => {
+  if (!recipeId) return;
+
+  const formData = new FormData();
+  formData.append("recipeId", recipeId);
+
+  if (isSaved) {
+    const result = await removeFromCollection(formData);
+    if (result?.success) {
+      setIsSaved(false);
+      toast.success("Recipe removed from collection");
+    }
+  } else {
+    const result = await saveToCollection(formData);
+    if (result?.success) {
+      if (result.alreadySaved) {
         toast.info("Recipe is already in your collection");
       } else {
         setIsSaved(true);
         toast.success("Recipe saved to your collection!");
       }
     }
-  }, [saveData]);
+  }
+};
 
-  // Handle remove success
-  useEffect(() => {
-    if (removeData?.success) {
-      setIsSaved(false);
-      toast.success("Recipe removed from collection");
-    }
-  }, [removeData]);
+// Fetch recipe on mount + update state when it arrives
+useEffect(() => {
+  if (!recipeName || recipe) return;
 
-   // Toggle save/unsave
-  const handleToggleSave = async () => {
-    if (!recipeId) return;
-
+  const loadRecipe = async () => {
     const formData = new FormData();
-    formData.append("recipeId", recipeId);
+    formData.append("recipeName", recipeName);
+    const result = await fetchRecipe(formData);
 
-    if (isSaved) {
-      await removeFromCollection(formData);
-    } else {
-      await saveToCollection(formData);
-    }
-  };
+    if (result?.success) {
+      setRecipe(result.recipe);
+      setRecipeId(result.recipeId);
+      setIsSaved(result.isSaved);
 
-   // Fetch recipe on mount
-  useEffect(() => {
-    if (recipeName && !recipe) {
-      const formData = new FormData();
-      formData.append("recipeName", recipeName);
-      fetchRecipe(formData);
-    }
-  }, [recipeName]);
-
-   // Update recipe when data arrives
-  useEffect(() => {
-    if (recipeData?.success) {
-      setRecipe(recipeData.recipe);
-      setRecipeId(recipeData.recipeId);
-      setIsSaved(recipeData.isSaved);
-
-      if (recipeData.fromDatabase) {
+      if (result.fromDatabase) {
         toast.success("Recipe loaded from database");
       } else {
         toast.success("New recipe generated and saved!");
       }
     }
-  }, [recipeData]);
+  };
+
+  loadRecipe();
+}, [recipeName]);
   
   // No recipe name in URL
   if (!recipeName) {
