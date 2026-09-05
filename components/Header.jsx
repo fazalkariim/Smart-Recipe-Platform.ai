@@ -29,7 +29,7 @@ const Header = async () => {
             width={64}
             height={64}
             priority
-            className="h-auto w-12 sm:w-16"
+            className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl object-cover"
           />
         </Link>
 
