@@ -10,6 +10,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Flavora | Smart Recipe AI",
   description: "AI-powered recipe platform!",
+  icons: {
+    icon: "/orangee.png",
+  },
 };
 
 // Simple inline brand icons (lucide-react v1 removed brand icons)
