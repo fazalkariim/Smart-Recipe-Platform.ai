@@ -10,6 +10,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN
 const GEMINI_API_KEY = process.env.GIMINI_API_KEY
+console.log("KEY CHECK:", GEMINI_API_KEY?.slice(0, 8), GEMINI_API_KEY?.length);
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
